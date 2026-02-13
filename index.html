@@ -3,26 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generador de Código con IA</title>
+    <title>Generador IA + Airtable</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="container">
-      <h1>Generador de código ejecutable</h1>
-      <label for="prompt">Instrucción</label>
+      <h1>Generador de código con IA</h1>
+      <label for="prompt">Prompt</label>
       <textarea
         id="prompt"
-        placeholder="Ejemplo: Crear contador con botón que incremente"
+        placeholder="Escribe una app web simple, por ejemplo: un temporizador pomodoro con HTML/CSS/JS"
       ></textarea>
       <button id="runButton" type="button">Ejecutar</button>
       <p id="status" aria-live="polite"></p>
 
-      <h2>Vista previa</h2>
-      <iframe
-        id="preview"
-        title="Vista previa segura"
-        sandbox="allow-scripts"
-      ></iframe>
+      <section>
+        <h2>Código generado</h2>
+        <pre id="codeOutput"></pre>
+      </section>
+
+      <section>
+        <h2>Resultado</h2>
+        <iframe id="preview" title="Vista previa segura" sandbox="allow-scripts"></iframe>
+      </section>
     </main>
 
     <script>
@@ -30,17 +33,20 @@
       const runButton = document.getElementById('runButton');
       const preview = document.getElementById('preview');
       const status = document.getElementById('status');
+      const codeOutput = document.getElementById('codeOutput');
 
       runButton.addEventListener('click', async () => {
-        const instruction = promptInput.value.trim();
+        const prompt = promptInput.value.trim();
 
-        if (!instruction) {
-          status.textContent = 'Ingresá una instrucción antes de ejecutar.';
+        if (!prompt) {
+          status.textContent = 'Ingresá un prompt antes de ejecutar.';
           return;
         }
 
         runButton.disabled = true;
-        status.textContent = 'Generando código...';
+        status.textContent = 'Guardando y generando...';
+        codeOutput.textContent = '';
+        preview.srcdoc = '';
 
         try {
           const response = await fetch('/generate', {
@@ -48,19 +54,20 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ instruction })
+            body: JSON.stringify({ prompt })
           });
 
+          const payload = await response.json();
+
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || 'No se pudo generar el código.');
+            throw new Error(payload.error || 'No se pudo generar el código.');
           }
 
-          const data = await response.json();
-          preview.srcdoc = data.code;
-          status.textContent = 'Código generado y cargado en el iframe.';
+          codeOutput.textContent = payload.code;
+          preview.srcdoc = payload.code;
+          status.textContent = 'Prompt y respuesta guardados en Airtable.';
         } catch (error) {
-          status.textContent = error.message || 'Ocurrió un error inesperado.';
+          status.textContent = error.message || 'Error inesperado.';
         } finally {
           runButton.disabled = false;
         }

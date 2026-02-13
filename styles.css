@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 980px;
   margin: 2rem auto;
   padding: 1.5rem;
   background: #ffffff;
@@ -23,6 +23,10 @@ h2 {
   margin-top: 0;
 }
 
+section {
+  margin-top: 1.25rem;
+}
+
 label {
   display: block;
   margin-bottom: 0.5rem;
@@ -31,7 +35,7 @@ label {
 
 textarea {
   width: 100%;
-  min-height: 130px;
+  min-height: 140px;
   padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -59,6 +63,17 @@ button:disabled {
 #status {
   min-height: 1.2rem;
   margin-top: 0.75rem;
+}
+
+#codeOutput {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  min-height: 180px;
 }
 
 iframe {
