@@ -32,7 +32,9 @@
     "format:check": "prettier --check 'src/**/*.ts'",
     "test": "vitest run",
     "test:watch": "vitest",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js",
+    "web:start": "node server.js",
+    "web:dev": "node server.js"
   },
   "keywords": [
     "browser",
