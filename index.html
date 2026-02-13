@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generador de Código con IA</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Generador de código ejecutable</h1>
+      <label for="prompt">Instrucción</label>
+      <textarea
+        id="prompt"
+        placeholder="Ejemplo: Crear contador con botón que incremente"
+      ></textarea>
+      <button id="runButton" type="button">Ejecutar</button>
+      <p id="status" aria-live="polite"></p>
+
+      <h2>Vista previa</h2>
+      <iframe
+        id="preview"
+        title="Vista previa segura"
+        sandbox="allow-scripts"
+      ></iframe>
+    </main>
+
+    <script>
+      const promptInput = document.getElementById('prompt');
+      const runButton = document.getElementById('runButton');
+      const preview = document.getElementById('preview');
+      const status = document.getElementById('status');
+
+      runButton.addEventListener('click', async () => {
+        const instruction = promptInput.value.trim();
+
+        if (!instruction) {
+          status.textContent = 'Ingresá una instrucción antes de ejecutar.';
+          return;
+        }
+
+        runButton.disabled = true;
+        status.textContent = 'Generando código...';
+
+        try {
+          const response = await fetch('/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ instruction })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'No se pudo generar el código.');
+          }
+
+          const data = await response.json();
+          preview.srcdoc = data.code;
+          status.textContent = 'Código generado y cargado en el iframe.';
+        } catch (error) {
+          status.textContent = error.message || 'Ocurrió un error inesperado.';
+        } finally {
+          runButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
